@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="global.sesoc.web6.vo.Gaver" alias="Gaver" />
+		<typeAlias type="global.sesoc.web6.vo.BoardVO" alias="Board" />
+		<typeAlias type="global.sesoc.web6.vo.CustomerVO" alias="Customer" />
+		<typeAlias type="global.sesoc.web6.vo.ReplyVO" alias="Reply" />
+	</typeAliases>
+	<mappers>
+		<mapper resource="gaverMapper.xml" />
+		<mapper resource="boardMapper.xml" />
+		<mapper resource="customerMapper.xml" />
+	</mappers>
+</configuration>

@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+
+div{
+    height:1200px;
+    width:100%;
+    background-color: #1fc8db; /* For browsers that do not support gradients */        
+    background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
+    color:white;
+    opacity:0.95;
+    margin:0%;
+    align:center;
+}
+
+head{
+	background-color: white;
+	color: black;
+	height:80px;
+	width:100%;
+	margin:0%;
+}
+
+th{background-color:white; color:black; width:900px; text-align: center;}
+th.1{background-color:white; color:black; width:50px; text-align: center;}
+th.2{background-color:white; color:black; width:500px; text-align: center;}
+th.3{background-color:white; color:black; width:350px; text-align: center;}
+td{width: 150px; text-align:center;}
+td.tale{background-color:white; color:black;}
+td.content{background-color:white; color:black; width:900px; height:600px;}
+
+/*댓글창*/
+th.reply{background-color:white; color:black; width:300px; text-align: center;}
+th.id{width:200px;}
+th.text{width:500px;}
+th.date{width:200px;}
+td.replyhead{background-color:#39e600; color:black; width:900px; height:50px; text-align: center;}
+td.replytale{background-color:#39e600; color:black; width:900px; height:50px;}

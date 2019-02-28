@@ -1,0 +1,7 @@
+@CHARSET "UTF-8";
+
+div{align:center; height: 900px; width: 100%;  margin: 1px auto;}
+div.login{width: 1000px; height: 60px; background-color:white; text-align:left; font-size:15px; width:5%; margin:0%;}
+table{text-align:center; border:1;}
+td{color: white;}
+h1{color: white; font-weight: 10px;}
