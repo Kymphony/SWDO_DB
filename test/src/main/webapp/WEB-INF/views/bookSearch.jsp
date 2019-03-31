@@ -19,26 +19,18 @@ function runSearch(){
 	alert('runSearch 메서들 실행합니다 by 자바스크립트');
 	var bookName = $('#bookName').val();
 	
-	
 	$.ajax({
 			
 			url:		'bookSearch',
 			type:		'POST',
 			data:		{bookName: bookName},
-			dataType:	'json',
-			success:	function(data){
-								
-								console.log(data);
-				
-								},
-			error:		function(e){alert(JSON.stringify(e));}
+			dataType:	'test',
+			success:	function output(data){
+						},
+			error:		function(e){}
 	
 		   });
 }
-
-/* function searchData(data){
-	alert(data);
-} */
 
 </script>
 

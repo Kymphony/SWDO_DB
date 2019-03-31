@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import global.sesoc.test.vo.SearchListVO;
 
 
 @Controller
@@ -73,20 +81,40 @@ public class searchController {
             		response.append(inputLine);
             	}
             
-        //스트링 data에 담고 Model에 저장하기    
-            data = response.toString();
-            System.out.println("data에 담기 정보 확인"+data);
-            model.addAttribute("data", data);
-            
-        //데이터 받기 종료 및 받은 데이타 확인
+            //데이터 받기 종료 및 받은 데이타 확인
             br.close();
             //System.out.println("--RAW DATA-- : "+response.toString());
+            
+            //스트링 data에 담기
+            data = response.toString();
+            
+            Gson gson = new Gson();
+            JsonParser parser = new JsonParser();
+            JsonElement items = parser.parse(data).getAsJsonObject().get("items");
+            
+            SearchListVO[] searchList = gson.fromJson(items, SearchListVO[].class);
+            ArrayList<SearchListVO> list = new ArrayList<SearchListVO>(Arrays.asList(searchList));
+            
+            //for(SearchListVO a:list)logger.info("제목:{}\n저자:{}\n가격:{}\n출판사:{}\n출판날짜:{}\nisbn:{}\n설명:{}"
+            //									,a.getTitle(),a.getAuthor(),a.getPrice(),a.getPublisher(),a.getPubdate(),a.getIsbn(),a.getDescription());
+            
+            for(SearchListVO a:list){
+            	
+            	//책제목에서 <b>NAVER</b>, <b>Naver</b> 지우기
+            	a.setTitle(a.getTitle().replaceAll("<b>NAVER</b>", ""));
+            	a.setTitle(a.getTitle().replaceAll("<b>Naver</b>", ""));
+            	
+            }
+            
+            
+            //모델에 저장
+            model.addAttribute("data", list);
+            
             
         } catch (Exception e) {
         	System.out.println(e);
         }
         
-
 	}
 }
             
