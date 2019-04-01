@@ -59,9 +59,12 @@ function runSearch(){
 	
 	<c:if test="${data != null}">
 		<table>
-			<c:forEach var="bookInfo" items="${data}">
+			<c:forEach var="i" begin = "0" end="${data.size()-1}">
 				<tr>
-					<td><p>${data}</p></td>
+					<td><p>${data.get(i).getTitle()}</p></td>
+					<td><p>${data.get(i).getAuthor()}</p></td>
+					<td><p>${data.get(i).getPrice()}</p></td>
+					<td><p>${data.get(i).Publisher()}</p></td>
 				</tr>
 			</c:forEach>
 		</table>

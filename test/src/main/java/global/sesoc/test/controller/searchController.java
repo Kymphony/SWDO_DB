@@ -46,7 +46,7 @@ public class searchController {
         String clientId = "teLQPDQlLSeiwwGD4317";//애플리케이션 클라이언트 아이디값";
         String clientSecret = "tw8UyiKd0O";//애플리케이션 클라이언트 시크릿값";
        
-        logger.info("검색할 데이터:{}",bookName);
+        logger.info("검색 입력 값:{}",bookName);
         
         try {
         	
@@ -104,6 +104,8 @@ public class searchController {
             	a.setTitle(a.getTitle().replaceAll("<b>NAVER</b>", ""));
             	a.setTitle(a.getTitle().replaceAll("<b>Naver</b>", ""));
             	
+            	//list 저장값 확인
+            	System.out.println(a);
             }
             
             

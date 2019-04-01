@@ -400,8 +400,10 @@ body {
   position: relative;
   width: 40%;
 }
+
+/* 수정 부분 */
 .layer-4 {
-  margin-top: 77px;
+  margin-top: 10px; /* 77에서 10으로 */
 }
 .layer-4 form.title-4 button {
   background: #40acd7 none repeat scroll 0 0;
