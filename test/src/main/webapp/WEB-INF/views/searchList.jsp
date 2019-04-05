@@ -46,6 +46,20 @@
         <link rel="stylesheet" href="resources/css/responsive.css">
 		<!-- modernizr css -->
         <script src="resources/js/vendor/modernizr-2.8.3.min.js"></script>
+        <script src="resources/js/jquery-3.3.1.min.js"></script>
+        <script>
+        //검색 기능 - Ajax에서 JavaScript로 변경
+
+		function runSearch(){
+			
+			var bookName = document.getElementById('bookName');
+			
+			if(bookName.value.length < 1){alert('검색할 내용을 입력하세요'); return false;}
+			
+			
+			return true;
+		}
+        </script>
         
   	<style>
   	/*전체 설정*/
@@ -170,6 +184,14 @@
                     </div>                    
                     <div class="col-md-9 col-sm-12 hidden-xs">
                         <div class="mainmenu text-center">
+                        <!-- 검색  -->
+						<div class="layer-4">
+	                        <form id="search" action="searchList" method="POST" class="title-4" onsubmit="return runSearch()">
+	                            <input type="text" placeholder="Enter your book title here" id="bookName" name="bookName" style="border: 1px; border-color: #40acd7;">
+	                            <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
+	                        </form>
+						</div>                        
+                        <!-- 검색  끝-->
                             <nav>
                                 <ul id="nav">
                                     <li><a href="index.html">HOME</a></li>
@@ -308,8 +330,8 @@
 <!-- 						상단바 끝						 -->	
 
 <!-- 상단바와의 공간 -->	
-<div style="height: 80px; text-align: center;" align="center"></div>
-<div style="height: 50px; text-align: center;" align="center"><p>검색 결과</p></div>
+<div style="height: 30px; text-align: center;" align="center"></div>
+<div style="height: 30px; text-align: center;" align="center"><p>검색 결과</p></div>
 
 <div align="center" class="bookList">
 	<table align="center">
@@ -339,9 +361,8 @@
 					
 				</td> -->
 				<td rowspan="3" id="blank"><!-- 열5: 공백 --></td>
-				<td id="buyButton"><!-- 열6: 구매 -->
-					<input type="button" id="buy" value="구매하기">
-
+				<td id="buyButton" ><!-- 열6: 구매 -->
+					<a class="cart-btn btn-default" href=""><i class="flaticon-shop"></i>구매하기</a>
 				</td>	
 			</tr>
 			<!-- 행2 -->
@@ -353,7 +374,7 @@
 					
 				</td> -->
 				<td id="presentButton"><!-- 열5: 선물 -->
-					<input type="button" id="present" value="선물하기">
+					<a class="cart-btn btn-default" href=""><i class="flaticon-shop"></i>선물하기</a>
 				</td>
 			</tr>
 			<!-- 행3 -->
@@ -362,7 +383,7 @@
 					<p>${data.get(i).getDescription()}</p>
 				</td>
 				<td id="cartButton">
-					<input type="button" id="cart" value="카트">
+					<a class="cart-btn btn-default" href=""><i class="flaticon-shop"></i>카트넣기</a>
 				</td>
 			</tr>
 			<!-- 행4 : 구분선 -->

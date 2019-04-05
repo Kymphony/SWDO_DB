@@ -88,6 +88,7 @@ public class searchController {
             
             
             for(SearchListVO a:list){
+
             	
             	//책제목에서 <b>NAVER</b>, <b>Naver</b> 지우기
             	a.setTitle(a.getTitle().replaceAll("<b>NAVER</b>", ""));
@@ -129,6 +130,10 @@ public class searchController {
        
         //띄어쓰기 부분에 있는 %20 -> 빈칸으로 바꿔주기
         title.replaceAll("%20", " ");
+        
+        //<b>,</b>제거
+        title.replaceAll("<b>", "");
+        title.replaceAll("</b>", "");
         
         logger.info("검색 입력 값:{}",title);
         
