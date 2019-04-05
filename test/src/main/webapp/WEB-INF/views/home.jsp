@@ -42,6 +42,21 @@
         <link rel="stylesheet" href="resources/css/responsive.css">
 		<!-- modernizr css -->
         <script src="resources/js/vendor/modernizr-2.8.3.min.js"></script>
+        
+        <script src="resources/js/jquery-3.3.1.min.js"></script>
+        <script>
+        //검색 기능 - Ajax에서 JavaScript로 변경
+
+		function runSearch(){
+			
+			var bookName = document.getElementById('bookName');
+			
+			if(bookName.value.length < 1){alert('검색할 내용을 입력하세요'); return false;}
+			
+			
+			return true;
+		}
+        </script>
     </head>
     <body>
         <!--[if lt IE 8]>
@@ -133,13 +148,14 @@
                     </div>                    
                     <div class="col-md-9 col-sm-12 hidden-xs">
                         <div class="mainmenu text-center">
-												<div class="layer-4">
-                        <form action="#" class="title-4">
-                            <input type="text" placeholder="Enter your book title here">
-                            <button type="button"><i id="submit"class="fa fa-search"></i></button>
-                        </form>
-					</div>                        
-                        
+						<!-- 검색  -->
+						<div class="layer-4">
+	                        <form id="search" action="searchList" method="POST" class="title-4" onsubmit="return runSearch()">
+	                            <input type="text" placeholder="Enter your book title here" id="bookName" name="bookName" style="border: 1px; border-color: #40acd7;">
+	                            <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
+	                        </form>
+						</div>                        
+                        <!-- 검색  끝-->
                             <nav>
                                 <ul id="nav">
                                     <li><a href="index.html">HOME</a></li>
@@ -1461,7 +1477,7 @@
 		                    <p>Subscribe here with your email us and get up to date.</p>
 		                </div>
 		                <div class="letter-box">
-		                    <form action="#" method="post" class="search-box">
+		                    <form action="#" method="POST" class="search-box">
 		                        <div>
                                     <input type="text" placeholder="Subscribe us">
                                     <button type="submit" class="btn btn-search">SUBSCRIBE<span><i class="flaticon-school-1"></i></span></button>

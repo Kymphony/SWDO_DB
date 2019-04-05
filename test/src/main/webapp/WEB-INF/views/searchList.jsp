@@ -2,6 +2,9 @@
 <html class="no-js" lang=""> -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
     <head>
         <meta charset="utf-8">
@@ -43,6 +46,39 @@
         <link rel="stylesheet" href="resources/css/responsive.css">
 		<!-- modernizr css -->
         <script src="resources/js/vendor/modernizr-2.8.3.min.js"></script>
+        
+  	<style>
+  	/*전체 설정*/
+  		td{padding-bottom: 1px; padding-top: 1px;}
+  		p{font-size: 15px;}
+  	/*디브 박스*/
+		.bookList{margin: 1px auto;}
+	/*책 제목 크기*/
+		p#bookTitle{font-size: 20px;}
+	/*테이블 영역*/
+		/*번호*/
+	 	#col1{width: 30px;} 
+	 	/*사진 */
+	 	#col2{width: 150px; height: 200px;}
+	 	/*제목*/
+	 	#row1col3{width: 600px; height: 40px;}
+	 	/*저자*/
+	 	#row1col4{width: 150px; height: 40px;}
+	 	/*공백*/
+	 	#blank{width: 80px; height: 200px;}
+	 	/*가격*/
+	 	#row2col3{width: 600px; height: 40px;}
+	 	/*출판사*/
+	 	#row1col4{width: 150px; height: 40px;}
+	 	/*설명 */
+	 	#row3col3{width: 750px; height: 40px;} 
+	 	/*구분선*/
+	 	#line{border-bottom:3px; border-bottom-style:solid; border-bottom-color: #b3daff;}
+		/*버튼*/
+		#buyButton{text-align: right;}
+		#presentButton{text-align: right;}
+		#cartButton{text-align: right;}	 
+  	</style>    
     </head>
     <body>
         <!--[if lt IE 8]>
@@ -269,25 +305,105 @@
 			</div>
 		</div>
 		
+<!-- 						상단바 끝						 -->	
+
+<!-- 상단바와의 공간 -->	
+<div style="height: 80px; text-align: center;" align="center"></div>
+<div style="height: 50px; text-align: center;" align="center"><p>검색 결과</p></div>
+
+<div align="center" class="bookList">
+	<table align="center">
+		<c:if test="${data!=null}">
+			<c:forEach var = "i" begin = "0" end="${data.size()-1}">
+			
+			<!-- 윗 공간 여백 주기 -->
+			<tr><td colspan="6"><p>　</p></td></tr>
+			
+			<!-- 행1 -->
+			<tr>
+				<td rowspan="3" id="col1"><!-- 열1: 번호 -->
+					<p>${i}</p>
+				</td>
+				<td rowspan="3" id="col2"><!-- 열2: 사진 -->
+					<!-- 사진이 없는 책일 경우 -->
+					<c:if test="${data.get(i).getImage() == null}">
+						<p>이미지 없음</p><!-- 또는 아카이브 로고 넣기 -->
+					</c:if>
+					<!-- 사진이 있는 책일 경우 -->
+					<img src="${data.get(i).getImage()}">
+				</td>
+				<td id="row1col3"><!-- 열3: 제목 -->
+					<a href="bookInfo?title=${data.get(i).getTitle()}"><p id="bookTitle">${data.get(i).getTitle()}</p></a>		
+				</td>
+				<!-- <td id="row1col4">열4: 저자
+					
+				</td> -->
+				<td rowspan="3" id="blank"><!-- 열5: 공백 --></td>
+				<td id="buyButton"><!-- 열6: 구매 -->
+					<input type="button" id="buy" value="구매하기">
+
+				</td>	
+			</tr>
+			<!-- 행2 -->
+			<tr>
+				<td id="row2col3"><!-- 열3: 가격 -->
+					<p>가격: ${data.get(i).getPrice()} | ${data.get(i).getAuthor()} | ${data.get(i).getPublisher()}</p>
+				</td>
+				<!-- <td id="row2col4">열4: 출판사
+					
+				</td> -->
+				<td id="presentButton"><!-- 열5: 선물 -->
+					<input type="button" id="present" value="선물하기">
+				</td>
+			</tr>
+			<!-- 행3 -->
+			<tr>
+				<td id="row3col3" colspan="2"><!-- 열3-4: 책 설명 -->
+					<p>${data.get(i).getDescription()}</p>
+				</td>
+				<td id="cartButton">
+					<input type="button" id="cart" value="카트">
+				</td>
+			</tr>
+			<!-- 행4 : 구분선 -->
+			<tr>
+				<td colspan="6" id="line"></td>
+			</tr>
+		</c:forEach>
+			<tr><td colspan="6" style="height: 150px;"><p>↑ 검색 결과</p></td></tr>
+		</c:if>
+	</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 		
 		<!-- 본문 배너 -->		
 		<!-- Mobile Menu End -->   
         <!-- Breadcrumbs Area Start -->
-        <div class="breadcrumbs-area" style="height:100px; text-transform: none;">
+<!--         <div class="breadcrumbs-area" style="height:100px; text-transform: none;">
 				<div style="padding:20px;">
 					<h2>GROUPS</h2> 
 						<ul>
 							<li>find your group to join!</li>
 						</ul>
 				</div>
-		</div> 
+		</div>  -->
 		
 		
 		
 		<!-- 작업 -->  <!-- 3.22 1차 작업 종료: DB에서 그룹 정보 넘어오는 백엔드 완성시 진행 -->
 		<!-- Breadcrumbs Area Start --> 
 		<!-- Cart Area Start -->
- 		<div class="shopping-cart-area section-padding">
+<!--  		<div class="shopping-cart-area section-padding">
 		    <div class="container" style="padding-bottom: 50px;">
 		        <div class="row">
 		            <div class="col-md-12" style="width:850px;">
@@ -312,7 +428,7 @@
 		            </div>
 		        </div>
 		    </div>
-		</div>
+		</div> -->
 		
 		
 		
