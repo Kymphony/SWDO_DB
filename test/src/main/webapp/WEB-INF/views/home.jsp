@@ -151,6 +151,12 @@
 						<!-- 검색  -->
 						<div class="layer-4">
 	                        <form id="search" action="searchList" method="POST" class="title-4" onsubmit="return runSearch()">
+	                        	<select id="detail" name="detail">
+	                        		<option value="total">통합 겁색</option>
+	                        		<option value="title">제목 검색</option>
+	                        		<option value="author">저자 검색</option>
+	                        		<option value="publisher">출판사 검색</option>
+	                        	</select>
 	                            <input type="text" placeholder="Enter your book title here" id="bookName" name="bookName" style="border: 1px; border-color: #40acd7;">
 	                            <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
 	                        </form>
