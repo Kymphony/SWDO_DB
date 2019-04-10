@@ -9,7 +9,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Shopping Cart || Witter Multipage Responsive Template</title>
+        <title>책 검색 목록 || 아카이브</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- favicon -->
@@ -186,7 +186,7 @@
                         <div class="mainmenu text-center">
                         <!-- 검색  -->
 						<div class="layer-4">
-	                        <form id="search" action="searchList" method="POST" class="title-4" onsubmit="return runSearch()">
+	                        <form id="search" action="searchList" method="GET" class="title-4" onsubmit="return runSearch()">
 	                            <select id="detail" name="detail">
 	                        		<option value="total">통합 겁색</option>
 	                        		<option value="title">제목 검색</option>
@@ -350,7 +350,7 @@
 			<!-- 행1 -->
 			<tr>
 				<td rowspan="3" id="col1"><!-- 열1: 번호 -->
-					<p>${i}</p>
+					<p>${i+1}</p>
 				</td>
 				<td rowspan="3" id="col2"><!-- 열2: 사진 -->
 					<!-- 사진이 없는 책일 경우 -->
@@ -361,7 +361,7 @@
 					<img src="${data.get(i).getImage()}">
 				</td>
 				<td id="row1col3"><!-- 열3: 제목 -->
-					<a href="bookInfo?title=${data.get(i).getTitle()}"><p id="bookTitle">${data.get(i).getTitle()}</p></a>		
+					<a href="bookInfo?isbn=${data.get(i).getIsbn()}"><p id="bookTitle">${data.get(i).getTitle()}</p></a>		
 				</td>
 				<!-- <td id="row1col4">열4: 저자
 					

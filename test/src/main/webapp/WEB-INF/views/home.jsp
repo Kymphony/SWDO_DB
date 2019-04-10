@@ -5,7 +5,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Home One || Witter Multipage Responsive Template</title>
+        <title>아카이브</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- favicon -->
@@ -150,7 +150,7 @@
                         <div class="mainmenu text-center">
 						<!-- 검색  -->
 						<div class="layer-4">
-	                        <form id="search" action="searchList" method="POST" class="title-4" onsubmit="return runSearch()">
+	                        <form id="search" action="searchList" method="GET" class="title-4" onsubmit="return runSearch()">
 	                        	<select id="detail" name="detail">
 	                        		<option value="total">통합 겁색</option>
 	                        		<option value="title">제목 검색</option>

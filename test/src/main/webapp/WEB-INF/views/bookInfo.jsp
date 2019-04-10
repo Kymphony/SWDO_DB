@@ -149,7 +149,7 @@
                         <div class="mainmenu text-center">
                         <!-- 검색  -->
 						<div class="layer-4">
-	                        <form id="search" action="searchList" method="POST" class="title-4" onsubmit="return runSearch()">
+	                        <form id="search" action="searchList" method="GET" class="title-4" onsubmit="return runSearch()">
 	                            <input type="text" placeholder="Enter your book title here" id="bookName" name="bookName" style="border: 1px; border-color: #40acd7;">
 	                            <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
 	                        </form>
@@ -468,7 +468,7 @@
         </div>
         <!-- Single Product Area End -->
         <!-- Related Product Area Start -->
-        <div class="related-product-area">
+        <!-- <div class="related-product-area">
             <h2 class="section-title">이런 책은 어떠세요?</h2>
             <div class="container">
                 <div class="row">
@@ -674,10 +674,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Related Product Area End -->
 		<!-- Footer Area Start -->
-		<footer>
+		<!-- <footer>
 		    <div class="footer-top-area">
 		        <div class="container">
 		            <div class="row">
@@ -806,38 +806,38 @@
 		        </div>
 		    </div>
 		</footer>
-		<!-- Footer Area End -->
-		<!-- all js here -->
-		<!-- jquery latest version -->
+		Footer Area End
+		all js here
+		jquery latest version
         <script src="js/vendor/jquery-1.12.0.min.js"></script>
-		<!-- bootstrap js -->
+		bootstrap js
         <script src="js/bootstrap.min.js"></script>
-		<!-- owl.carousel js -->
+		owl.carousel js
         <script src="js/owl.carousel.min.js"></script>
-		<!-- jquery-ui js -->
+		jquery-ui js
         <script src="js/jquery-ui.min.js"></script>
-		<!-- jquery Counterup js -->
+		jquery Counterup js
         <script src="js/jquery.counterup.min.js"></script>
         <script src="js/waypoints.min.js"></script>	
-		<!-- jquery countdown js -->
+		jquery countdown js
         <script src="js/jquery.countdown.min.js"></script>
-		<!-- jquery countdown js -->
+		jquery countdown js
         <script type="text/javascript" src="venobox/venobox.min.js"></script>
-		<!-- jquery Meanmenu js -->
+		jquery Meanmenu js
         <script src="js/jquery.meanmenu.js"></script>
-		<!-- wow js -->
+		wow js
         <script src="js/wow.min.js"></script>	
 		<script>
 			new WOW().init();
 		</script>
-		<!-- scrollUp JS -->		
+		scrollUp JS		
         <script src="js/jquery.scrollUp.min.js"></script>
-		<!-- plugins js -->
+		plugins js
         <script src="js/plugins.js"></script>
-		<!-- Nivo slider js -->
+		Nivo slider js
 		<script src="lib/js/jquery.nivo.slider.js" type="text/javascript"></script>
 		<script src="lib/home.js" type="text/javascript"></script>
-		<!-- main js -->
-        <script src="js/main.js"></script>
+		main js
+        <script src="js/main.js"></script> -->
     </body>
 </html>
