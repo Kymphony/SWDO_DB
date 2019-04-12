@@ -44,14 +44,52 @@
         <script src="resources/js/vendor/modernizr-2.8.3.min.js"></script>
         <script src="resources/js/jquery-3.3.1.min.js"></script>
         <script>
+        //지도 검색 기능
+        $(document).ready(function(){
+        	
+    		$('#libSearch').on('click',runAPI);
+        	
+        });
+        
+        	function runAPI(){
+        		
+        		var temp = document.getElementById("isbn");
+        		var isbn = temp.value;
+        		
+        		alert('isbn값 확인:' + isbn);
+        		
+        		runTrans(isbn);
+        	}
+        
+		//isbn값 받고 컨트롤러에 전송
+	        function runTrans(isbn){
+				
+				alert('runTrans 실행, 전달받은 isbn 값: '+isbn);
+				
+				
+				$.ajax({
+					url:		'libList',
+					type:		'POST',
+					data:		{isbn: isbn},
+					dataType:	'json',
+					success:	libList,
+					error:		function(){alert('전송 실패');}
+				});				
+	        }
+		
+		
+			function libList(list){
+				
+				alert('성공');
+				
+			}
+        
+        
         //검색 기능 - Ajax에서 JavaScript로 변경
-
 		function runSearch(){
 			
 			var bookName = document.getElementById('bookName');
-			
 			if(bookName.value.length < 1){alert('검색할 내용을 입력하세요'); return false;}
-			
 			
 			return true;
 		}
@@ -393,17 +431,21 @@
                             </div>
                             
           <!--지도 ----------------------------------------------------------------------------->
+          				<form>
+	          				<input type="hidden" id="isbn" name="isbn" value="${data.get(0).getIsbn()}">
+	          				<input type="button" id="libSearch" value="도서 위치 검색">
+          				</form>
+	                    <c:if test="${lib!=null}">
                  		<!-- 지도 들어갈 박스 -->
                             <div id="map" style="width:500px;height:400px;"></div>
                             <br>
                         <!-- 도서관 목록 출력 -->
-	                        <c:if test="${lib!=null}">
-	                        	<div class="availability">
-	                        		<c:forEach var="i" items="${lib}">
-	                               	 <span><p>${i.getLIB_NAME()}</p></span><br>
-	                                </c:forEach>
-	                            </div>
-	                        </c:if>
+	                        <div class="availability">
+	                        	<c:forEach var="i" items="${lib}">
+	                            	<span><p>${i.getLIB_NAME()}</p></span><br>
+	                            </c:forEach>
+	                        </div>
+	                    </c:if>
                         <!-- 카카오 맵 API 요청 -->
 					        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=81c2588a73fda1b891b9a11fe81d3aa4"></script>
 					        <script>

@@ -37,10 +37,12 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import global.sesoc.test.api.LibLocation;
 import global.sesoc.test.api.bookInfo;
 import global.sesoc.test.api.bookSearch;
 import global.sesoc.test.api.libSearch;
 import global.sesoc.test.vo.LibraryVO;
+import global.sesoc.test.vo.LivInfoVO;
 import global.sesoc.test.vo.SearchListVO;
 
 
@@ -101,21 +103,51 @@ public class SearchController {
 			//받아온 값 모델에 저장
 				model.addAttribute("data", list);
 			
-		/*도서관 정보 출력 API*/
-			//API 클래스 수입, 선언
-				//1차 - 도서관 이름, 도서관 코드, 요청 코드 가져오기
-				libSearch libsearch = new libSearch();
-				ArrayList<LibraryVO> liblist = new ArrayList<LibraryVO>();
-				//2차 - 도서관 주소 가져오기
-				
-			//API 메서드 실행값 받아오기
-				liblist = libsearch.libsearch(isbn);
-				logger.info("\nLibSearch 클래스에서 컨트롤러로 넘겨준 값:{}\n",liblist);
-			
-			//받아온 값 모델에 저장
-				model.addAttribute("lib", liblist);
+		
 				
 		return "bookInfo";
+	}//매핑 끝
+	
+	@ResponseBody
+	@RequestMapping(value = "/libList", method = RequestMethod.POST)
+	public ArrayList<LivInfoVO> libList(String isbn) {
+	
+		//web에서 입력된 isbn값 확인
+		logger.info("\n\n 자바 스크립트 -> libList매퍼에서 받은 도서 검색 입력 값:{}",isbn);
+		
+		//ISBN 13 추출
+			int fact1 = isbn.indexOf(" ")+1;
+			int fact2 = isbn.length();
+			isbn = isbn.substring(fact1, fact2);
+		
+			logger.info("\n\n 변환 후 isbn값:{}",isbn);	
+		
+		/*도서관 정보 출력 API*/
+			//API 클래스 수입, 선언
+				//1차 - 도서관 목록 객체배열 선언
+				libSearch libsearch = new libSearch();
+				ArrayList<LibraryVO> liblist = new ArrayList<LibraryVO>();
+				//2차 - 도서관별 위치 객체배열 선언
+				LibLocation libLocation = new LibLocation();
+				ArrayList<LivInfoVO> locationList = new ArrayList<LivInfoVO>();
+				
+			//API 메서드 실행값 받아오기
+				//1차 - 도서관 이름, 도서관 코드, 요청 코드 가져오기
+				liblist = libsearch.libsearch(isbn);
+				logger.info("\nLibSearch 클래스에서 컨트롤러로 넘겨준 값(도서관 목록):{}\n",liblist);
+				
+				
+				//2차 - 도서관 이름, 주소, 전화번호, 홈페이지 가져오기
+				locationList = libLocation.libLocation(liblist);
+				logger.info("\nLibLocation 클래스에서 컨트롤러로 넘겨준 값(도서관 위치):{}\n",locationList);
+			
+			//받아온 값 모델에 저장
+				//model.addAttribute("lib", liblist);
+				//model.addAttribute("loc", locationList);
+				
+				
+				return locationList;
+				
 	}//매핑 끝
 
 }//컨트롤러 끝 

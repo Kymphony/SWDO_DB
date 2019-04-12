@@ -40,6 +40,8 @@ public class libSearch {
 	            		+ "&code1=" + isbn
 	            		+ "&per_page=10";
 	            
+	            //"http://nl.go.kr/kolisnet/openApi/open.php?page=1&gubun1=ISBN&code1=9788959895526&per_page=10"
+	            
 		    //API호출
                 URL url = new URL(apiURL);
                 HttpURLConnection urlconnection = (HttpURLConnection)url.openConnection();
@@ -54,7 +56,7 @@ public class libSearch {
 	            {
 	                data += msg;
 	            }
-	            System.out.println(msg);
+	            System.out.println("readLine으로 읽어들인 데이터:"+data);
 	            
 	            ArrayList<LibraryVO> list = null; //결과데이터 담을 리스트 
 	            //System.out.println(data); //응답받은 xml문서 xml문서로부터 내가 원하는 값 탐색하기(xml 파싱)
@@ -102,7 +104,7 @@ public class libSearch {
 	                 				case "LIB_NAME": 	if(b!=null)b.setLIB_NAME(parser.nextText());	break;
 	                 				case "LIB_CODE"	: 	if(b!=null)b.setLIB_CODE(parser.nextText());	break;
 	                 				case "REC_KEY": 	if(b!=null)b.setREC_KEY(parser.nextText());		break;
-	                                
+	                 				
 	                 			}//안쪽 스위치 끝
 	                 			break;
 	                 	}//case 끝
