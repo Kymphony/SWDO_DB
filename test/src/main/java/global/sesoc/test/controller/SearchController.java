@@ -76,13 +76,18 @@ public class SearchController {
 		   
 	
 	/* 
-	 * 도서별 정보 페이지  : 객체배열로 출력하기 -> 객체로 출력하기 수정 전 
+	 * 도서별 정보 페이지
 	 * */
 	@RequestMapping(value = "/bookInfo", method = RequestMethod.GET)
 	public String bookinfo(String isbn, Model model) {
 		
 		//web에서 입력된 isbn값 확인
 		logger.info("\n\n 단일 도서 검색 입력 값:{}",isbn);
+		
+		//ISBN 13 추출
+		int fact1 = isbn.indexOf(" ")+1;
+		int fact2 = isbn.length();
+		isbn = isbn.substring(fact1, fact2);
 		
 		/*책 정보 출력 API*/	
 			//API 클래스 수입, 선언
@@ -96,18 +101,19 @@ public class SearchController {
 			//받아온 값 모델에 저장
 				model.addAttribute("data", list);
 			
-		/*책 대여 관련 정보 출력 API*/
+		/*도서관 정보 출력 API*/
 			//API 클래스 수입, 선언
+				//1차 - 도서관 이름, 도서관 코드, 요청 코드 가져오기
 				libSearch libsearch = new libSearch();
 				ArrayList<LibraryVO> liblist = new ArrayList<LibraryVO>();
-			
-			//API 메서드 실행 ㅎ 값 받아오기
+				//2차 - 도서관 주소 가져오기
+				
+			//API 메서드 실행값 받아오기
 				liblist = libsearch.libsearch(isbn);
-				logger.info("LibSearch 클래스에서 컨트롤러로 넘겨준 값:{}",liblist);
+				logger.info("\nLibSearch 클래스에서 컨트롤러로 넘겨준 값:{}\n",liblist);
 			
 			//받아온 값 모델에 저장
 				model.addAttribute("lib", liblist);
-				
 				
 		return "bookInfo";
 	}//매핑 끝

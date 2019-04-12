@@ -391,6 +391,66 @@
                                     </a>
                                </span>
                             </div>
+                            
+          <!--지도 ----------------------------------------------------------------------------->
+                 		<!-- 지도 들어갈 박스 -->
+                            <div id="map" style="width:500px;height:400px;"></div>
+                            <br>
+                        <!-- 도서관 목록 출력 -->
+	                        <c:if test="${lib!=null}">
+	                        	<div class="availability">
+	                        		<c:forEach var="i" items="${lib}">
+	                               	 <span><p>${i.getLIB_NAME()}</p></span><br>
+	                                </c:forEach>
+	                            </div>
+	                        </c:if>
+                        <!-- 카카오 맵 API 요청 -->
+					        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=81c2588a73fda1b891b9a11fe81d3aa4"></script>
+					        <script>
+					        	var container = document.getElementById('map');
+					        	var options = { //지도를 생성할 때 필요한 기본 옵션
+					        			center: new daum.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
+					        			level: 3 //지도의 레벨(확대, 축소 정도)
+					        		};
+					        	var map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
+					        </script>
+					    <!-- 라이브러리 추가 -->
+					        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=APIKEY&libraries=services,clusterer,drawing"></script>
+					    <!-- 마커 생성 -->
+					    	<script>
+					    	//마커 설정 객체 생성
+						    	var clusterer = new daum.maps.MarkerClusterer({
+						    	    map: map,
+						    	    markers: markers,
+						    	    gridSize: 35,
+						    	    averageCenter: true,
+						    	    minLevel: 6,
+						    	    disableClickZoom: true,
+						    	    styles: [{
+						    	        width : '53px', height : '52px',
+						    	        background: 'url(cluster.png) no-repeat',
+						    	        color: '#fff',
+						    	        textAlign: 'center',
+						    	        lineHeight: '54px'
+						    	    }]
+						    	});
+					    	
+					    	//마커 생성
+					    	/* var marker = new daum.maps.Marker({
+							    position: new daum.maps.LatLng( 35.14449133178304, 126.80743456369791 )
+							});
+							
+							clusterer.addMarker(marker); */
+
+							
+							
+							</script>
+					    
+					    
+					    
+					    
+					    
+					    
                             <!-- 위시리스트 기능 삭제 -->
                             <!-- <div class="add-to-wishlist">
                                 <a class="wish-btn" href="cart.html">
