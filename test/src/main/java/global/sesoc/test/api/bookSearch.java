@@ -30,7 +30,7 @@ public class bookSearch {
 		String clientId = "teLQPDQlLSeiwwGD4317";//애플리케이션 클라이언트 아이디값";
         String clientSecret = "tw8UyiKd0O";//애플리케이션 클라이언트 시크릿값";
        
-        logger.info("\n\n통합 검색 입력 값:{}, 상세 검색 입력 값:{}\n",bookname,detail);
+       //logger.info("\n\n통합 검색 입력 값:{}, 상세 검색 입력 값:{}\n",bookname,detail);
         
         try {
         	
@@ -114,7 +114,7 @@ public class bookSearch {
 		            	}
 		            	
 		            	//list 저장값 확인
-		            	System.out.println(a);
+		            	//System.out.println(a);
 		            }
 		            
 		            
@@ -129,7 +129,7 @@ public class bookSearch {
 		      		
 		        else{
 		        	
-		        	logger.info("XML 진입");
+		        	//logger.info("XML 진입");
 		        	
 		        	//API 호출
 		        	

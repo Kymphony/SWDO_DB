@@ -25,7 +25,7 @@ public class libSearch {
 		
 			
 			//입력 값 변환 및 확인
-				logger.info("libSearch에서 받은 값:{}",isbn);
+				//logger.info("libSearch에서 받은 값:{}",isbn);
 				
 				BufferedReader br = null;
 			
@@ -56,7 +56,7 @@ public class libSearch {
 	            {
 	                data += msg;
 	            }
-	            System.out.println("readLine으로 읽어들인 데이터:"+data);
+	            //System.out.println("readLine으로 읽어들인 데이터:"+data);
 	            
 	            ArrayList<LibraryVO> list = null; //결과데이터 담을 리스트 
 	            //System.out.println(data); //응답받은 xml문서 xml문서로부터 내가 원하는 값 탐색하기(xml 파싱)
@@ -113,11 +113,11 @@ public class libSearch {
 	             }//while문 끝
         
         //확인차 출력    
-	        for(LibraryVO i : list){
+	        /*for(LibraryVO i : list){
 	        	
 	        	if(i.getLIB_NAME() != "")logger.info("\nlibSearch에서 컨트롤러로 보낼 값: {}\n",i);
 	        
-	        }
+	        }*/
 	        
         //컨트롤러로 값 전송
 	        return list;

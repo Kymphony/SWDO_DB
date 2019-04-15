@@ -42,6 +42,94 @@
         <link rel="stylesheet" href="resources/css/responsive.css">
 		<!-- modernizr css -->
         <script src="resources/js/vendor/modernizr-2.8.3.min.js"></script>
+		
+		<!-- 카카오 맵 API -->
+		<script type = "text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8762eae7fca2168c1a78eb242d55db65"></script>
+		<script>
+		var map;
+		window.onload = function(){
+			//페이지 로드시 나의 현재 위치의 위도와 경도 얻기
+			//현재 위치정보 딱 한번 앋기
+			navigator.geolocation.getCurrentPosition(sucCall);
+		};
+		//위치 정보 얻기 성공시 자동으로 호출되는 콜배함수. 인자는 Position 객체
+		var sucCall = function(position){
+			//위도
+			var lat = position.coords.latitude;
+			//경도
+			var lng = position.coords.longitude;
+			
+			//지도 표시 메서드 호출
+			displayMap(lat, lng);
+		};
+		
+		function displayMap(lat, lng){
+			//지도 표시
+			var container = document.getElementById('map');//지도를 담을 영역의 DOM 레퍼런스
+			var options = {//지도를 생성할 때 필요한 기본 옵션
+							//지도의 중심좌표
+							center: new daum.maps.LatLng(lat, lng),
+							//지도의 레벨(확대, 축소 정도)
+							level: 3 
+					};
+			
+			//지도 생성 및 객체 리턴
+			map = new daum.maps.Map(container, options);
+			
+			//마커 표시
+			setMarker(lat,lng,"<div style='padding:5px;'>현재 나의 위치</div>");
+		}
+		
+		function setMarker(lat, lng, content){
+			//마커가 표시될 위치
+			var markerPosition = new daum.maps.LatLng(lat,lng);
+			//마커 생성
+			var marker = new daum.maps.Marker({
+				position: markerPosition,
+				clickable: true
+			});
+			
+			//마커가 지도 위에 표시되도록 설정
+			marker.setMap(map);
+			//마커에 클릭이벤트 등록하기
+			setMarkerClick(marker, content);
+		}
+		
+		function setMarkerClick(marker, content){
+			//인포 윈도우 생성
+			var infowindow = new daum.maps.InfoWindow({
+				content: content,
+				removable: true
+			});
+			
+			//마커에 클릭이벤트 등록
+			daum.maps.event.addListener(marker, 'click', function(){
+				//마커 위에 인포윈도우 표시
+				infowindow.open(map, marker);
+			});
+		}
+		
+		function codeAddress(){
+			var address = document.getElementById("address").value;
+			
+			//주소-좌표 변환 객체 생성
+			var geocoder = new daum.maps.services.Geocoder();
+			
+			//주소로 좌표를 검색합니다
+			geocoder.addressSearch(address,function(result, status){
+				//정상적으로 검색이 완료됐으면
+				if(status === daum.maps.services.Status.OK){
+					var lat = result[0].y;
+					var lng = result[0].x;
+					
+					setMarker(lat,lng,"<div style='padding:5px;'>" + address +"</div>");
+					
+					//지도의 중심을 결과값으로 받은 위치로 이동
+					map.setCenter(new daum.maps.LatLng(lat, lng));
+				}
+			});
+		}
+		</script>       
         <script src="resources/js/jquery-3.3.1.min.js"></script>
         <script>
         //지도 검색 기능
@@ -56,6 +144,7 @@
         		var temp = document.getElementById("isbn");
         		var isbn = temp.value;
         		
+        		if(isbn == null || isbn == ''){alert('검색 할 수 없는 도서입니다.');return;}
         		alert('isbn값 확인:' + isbn);
         		
         		runTrans(isbn);
@@ -64,9 +153,8 @@
 		//isbn값 받고 컨트롤러에 전송
 	        function runTrans(isbn){
 				
-				alert('runTrans 실행, 전달받은 isbn 값: '+isbn);
-				
-				
+				alert('runTrans 실행');
+			
 				$.ajax({
 					url:		'libList',
 					type:		'POST',
@@ -80,8 +168,25 @@
 		
 			function libList(list){
 				
-				alert('성공');
+				alert('libList(list) 실행');
 				
+				if(list == "" || list == null){
+					var lib = '<p>해당 도서를 가지고 있는 도서관이 없습니다.</p>';
+					$('#LibList').html(lib);
+				}
+				else{
+					//div 태그에 도서관 목록 삽입
+					var lib = '<input type="button" id = "location" value = "내 위치">';
+					lib += '<table>';
+					$.each(list, function(key, data){
+						
+						lib += '<tr><td>' + data.name + '</td></tr>';
+						
+					});
+					lib += '</table>';
+					$('#LibList').html(lib);
+					alert('libList 마지막 도착');
+				}
 			}
         
         
@@ -95,7 +200,7 @@
 		}
         </script>
     </head>
-    <body>
+    <body onload="showCurrentLocation();">
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -431,68 +536,21 @@
                             </div>
                             
           <!--지도 ----------------------------------------------------------------------------->
+          			<!-- 클릭 버튼 -->
           				<form>
 	          				<input type="hidden" id="isbn" name="isbn" value="${data.get(0).getIsbn()}">
 	          				<input type="button" id="libSearch" value="도서 위치 검색">
           				</form>
-	                    <c:if test="${lib!=null}">
-                 		<!-- 지도 들어갈 박스 -->
-                            <div id="map" style="width:500px;height:400px;"></div>
-                            <br>
-                        <!-- 도서관 목록 출력 -->
-	                        <div class="availability">
-	                        	<c:forEach var="i" items="${lib}">
-	                            	<span><p>${i.getLIB_NAME()}</p></span><br>
-	                            </c:forEach>
-	                        </div>
-	                    </c:if>
-                        <!-- 카카오 맵 API 요청 -->
-					        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=81c2588a73fda1b891b9a11fe81d3aa4"></script>
-					        <script>
-					        	var container = document.getElementById('map');
-					        	var options = { //지도를 생성할 때 필요한 기본 옵션
-					        			center: new daum.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
-					        			level: 3 //지도의 레벨(확대, 축소 정도)
-					        		};
-					        	var map = new daum.maps.Map(container, options); //지도 생성 및 객체 리턴
-					        </script>
-					    <!-- 라이브러리 추가 -->
-					        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=APIKEY&libraries=services,clusterer,drawing"></script>
-					    <!-- 마커 생성 -->
-					    	<script>
-					    	//마커 설정 객체 생성
-						    	var clusterer = new daum.maps.MarkerClusterer({
-						    	    map: map,
-						    	    markers: markers,
-						    	    gridSize: 35,
-						    	    averageCenter: true,
-						    	    minLevel: 6,
-						    	    disableClickZoom: true,
-						    	    styles: [{
-						    	        width : '53px', height : '52px',
-						    	        background: 'url(cluster.png) no-repeat',
-						    	        color: '#fff',
-						    	        textAlign: 'center',
-						    	        lineHeight: '54px'
-						    	    }]
-						    	});
-					    	
-					    	//마커 생성
-					    	/* var marker = new daum.maps.Marker({
-							    position: new daum.maps.LatLng( 35.14449133178304, 126.80743456369791 )
-							});
-							
-							clusterer.addMarker(marker); */
-
-							
-							
-							</script>
-					    
-					    
-					    
-					    
-					    
-					    
+          				
+                 	<!-- 지도, 도서관 목록 들어갈 박스 -->
+                 		<!-- 목록 박스 -->
+	                    <div id="map" style="width:500px; height:400px;"></div>
+					    <fieldset>
+						    <div>
+						    	<input id="address" type="text">
+						    	<input id="button" value="주소" onclick="codeAddress()">
+						    </div>
+					    </fieldset>
                             <!-- 위시리스트 기능 삭제 -->
                             <!-- <div class="add-to-wishlist">
                                 <a class="wish-btn" href="cart.html">

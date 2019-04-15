@@ -2,7 +2,7 @@ package global.sesoc.test.vo;
 
 public class LivInfoVO {
 
-	private String LIB_NAME;
+	private String NAME;
 	private String TEL;
 	private String ADDRESS;
 	private String HOMEPAGE;
@@ -10,19 +10,19 @@ public class LivInfoVO {
 	
 	public LivInfoVO(){}
 	
-	public LivInfoVO(String lIB_NAME, String tEL, String aDDRESS, String hOMEPAGE) {
+	public LivInfoVO(String nAME, String tEL, String aDDRESS, String hOMEPAGE) {
 		
-		LIB_NAME = lIB_NAME;
+		NAME = nAME;
 		TEL = tEL;
 		ADDRESS = aDDRESS;
 		HOMEPAGE = hOMEPAGE;
 	}
 
-	public String getLIB_NAME() {
-		return LIB_NAME;
+	public String getNAME() {
+		return NAME;
 	}
-	public void setLIB_NAME(String lIB_NAME) {
-		LIB_NAME = lIB_NAME;
+	public void setNAME(String nAME) {
+		NAME = nAME;
 	}
 	public String getTEL() {
 		return TEL;
@@ -45,7 +45,7 @@ public class LivInfoVO {
 	
 	@Override
 	public String toString() {
-		return "LivInfoVO [LIB_NAME=" + LIB_NAME + ", TEL=" + TEL + ", ADDRESS=" + ADDRESS + ", HOMEPAGE=" + HOMEPAGE
+		return "LivInfoVO [NAME=" + NAME + ", TEL=" + TEL + ", ADDRESS=" + ADDRESS + ", HOMEPAGE=" + HOMEPAGE
 				+ "]";
 	}
 	
