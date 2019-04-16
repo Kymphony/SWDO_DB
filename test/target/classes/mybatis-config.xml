@@ -5,10 +5,11 @@
 <configuration>
 
 	<typeAliases>
-		
+		<typeAlias type="global.sesoc.test.vo.EBookNumVO" alias="ebooknum" /> 
 	</typeAliases>
 	
 	<mappers>
+		<mapper resource="ebookMapper.xml" />
 	</mappers>
 	
 </configuration>

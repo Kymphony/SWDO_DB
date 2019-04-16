@@ -41,6 +41,8 @@ import global.sesoc.test.api.LibLocation;
 import global.sesoc.test.api.bookInfo;
 import global.sesoc.test.api.bookSearch;
 import global.sesoc.test.api.libSearch;
+import global.sesoc.test.dao.EbookDAO;
+import global.sesoc.test.vo.EBookNumVO;
 import global.sesoc.test.vo.LibraryVO;
 import global.sesoc.test.vo.LivInfoVO;
 import global.sesoc.test.vo.SearchListVO;
@@ -50,16 +52,47 @@ import oracle.net.aso.i;
 @Controller
 public class SearchController {
 	
+	@Autowired
+	EbookDAO dao;
+	
 	
 	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 	
 	
 	/* 
 	 * 책 검색
+	 * 1)DB검색 - eBook 검색 - 사진 가져오는건 재성이가
+	 * 2)API검색 - eBook없는, 네이버API에서 가져오는 책들
 	 *  */
 	@RequestMapping(value = "/searchList", method = RequestMethod.GET)
 	public String searchBook2(String bookName,String detail, Model model) {
 		
+		/*1) DB검색*/
+		//웹에서 고객이 검색한 값 확인 (저자 - author, title1 or title2, publisher -> 아카이브로 출력, 나머지는 없음) 
+		ArrayList<EBookNumVO> ebook = null; //booknum, title, author, publisher 가지고 있는 객체
+		//1)통합검색
+			if(detail.equals("total")) {
+				ebook = dao.total(bookName);
+				model.addAttribute("ebook", ebook);
+			}
+		//2)책 제목 검색
+			if(detail.equals("title")){
+				ebook = dao.title(bookName);
+				model.addAttribute("ebook", ebook);
+			}
+		//3)저자 검색
+			if(detail.equals("author")){
+				ebook = dao.author(bookName);
+				model.addAttribute("ebook", ebook);
+			}
+		//4)출판사 검색
+			if(detail.equals("publisher")){
+				ebook = dao.pub(bookName);
+				model.addAttribute("ebook", ebook);
+			}
+		
+		
+		/*2) API검색*/
 		//웹에서 고객이 검색한 값 확인
 			//logger.info("\n\n통합 검색 입력 값:{}, 상세 검색 입력 값:{}\n",bookName,detail);
         
@@ -108,6 +141,7 @@ public class SearchController {
 				
 		return "bookInfo";
 	}//매핑 끝
+	
 	
 	@ResponseBody
 	@RequestMapping(value = "/libList", method = RequestMethod.POST)

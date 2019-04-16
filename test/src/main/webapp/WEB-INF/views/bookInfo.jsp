@@ -43,15 +43,15 @@
 		<!-- modernizr css -->
         <script src="resources/js/vendor/modernizr-2.8.3.min.js"></script>
 		
-		<!-- 카카오 맵 API -->
-		<script type = "text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8762eae7fca2168c1a78eb242d55db65"></script>
+<!----------------------------------- 카카오 맵 API ------------------------------------------------->
+		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=75f1d4e9550bf5ba1993aec460a39511&libraries=services,clusterer,drawing"></script>
 		<script>
 		var map;
-		window.onload = function(){
+		/* window.onload = function(){
 			//페이지 로드시 나의 현재 위치의 위도와 경도 얻기
 			//현재 위치정보 딱 한번 앋기
 			navigator.geolocation.getCurrentPosition(sucCall);
-		};
+		}; */
 		//위치 정보 얻기 성공시 자동으로 호출되는 콜배함수. 인자는 Position 객체
 		var sucCall = function(position){
 			//위도
@@ -77,7 +77,7 @@
 			map = new daum.maps.Map(container, options);
 			
 			//마커 표시
-			setMarker(lat,lng,"<div style='padding:5px;'>현재 나의 위치</div>");
+			setMarker(lat,lng,"<div style='padding:5px;'>현재 위치</div>");
 		}
 		
 		function setMarker(lat, lng, content){
@@ -109,14 +109,22 @@
 			});
 		}
 		
-		function codeAddress(){
-			var address = document.getElementById("address").value;
+		function codeAddress(p){
+			
+			//alert('codeAddress 실행');
+			
+			//var address = document.getElementById("address").value;
+			var address = p;
+			
 			
 			//주소-좌표 변환 객체 생성
 			var geocoder = new daum.maps.services.Geocoder();
 			
+			
 			//주소로 좌표를 검색합니다
 			geocoder.addressSearch(address,function(result, status){
+				
+				
 				//정상적으로 검색이 완료됐으면
 				if(status === daum.maps.services.Status.OK){
 					var lat = result[0].y;
@@ -129,14 +137,16 @@
 				}
 			});
 		}
-		</script>       
+		</script>
+<!-------------------------------- 카카오 맵 API 부분 끝 ---------------------------------------------->
+
         <script src="resources/js/jquery-3.3.1.min.js"></script>
         <script>
         //지도 검색 기능
         $(document).ready(function(){
         	
     		$('#libSearch').on('click',runAPI);
-        	
+    		
         });
         
         	function runAPI(){
@@ -145,7 +155,7 @@
         		var isbn = temp.value;
         		
         		if(isbn == null || isbn == ''){alert('검색 할 수 없는 도서입니다.');return;}
-        		alert('isbn값 확인:' + isbn);
+        		//alert('isbn값 확인:' + isbn);
         		
         		runTrans(isbn);
         	}
@@ -153,7 +163,7 @@
 		//isbn값 받고 컨트롤러에 전송
 	        function runTrans(isbn){
 				
-				alert('runTrans 실행');
+				//alert('runTrans 실행');
 			
 				$.ajax({
 					url:		'libList',
@@ -168,29 +178,31 @@
 		
 			function libList(list){
 				
-				alert('libList(list) 실행');
+				//alert('libList(list) 실행');
 				
-				if(list == "" || list == null){
+				if(list == "" || list == null || list[0].name == "출판시도서목록센터"){
 					var lib = '<p>해당 도서를 가지고 있는 도서관이 없습니다.</p>';
 					$('#LibList').html(lib);
 				}
 				else{
 					//div 태그에 도서관 목록 삽입
-					var lib = '<input type="button" id = "location" value = "내 위치">';
-					lib += '<table>';
+					var lib = ' ';
+					var acute = "'";
 					$.each(list, function(key, data){
-						
-						lib += '<tr><td>' + data.name + '</td></tr>';
+						//작업
+						lib += '<input type="button" name="address" value="'+ data.name +'" onclick="codeAddress(' + acute + data.address + acute + ')"><br>';
 						
 					});
-					lib += '</table>';
 					$('#LibList').html(lib);
-					alert('libList 마지막 도착');
+					
+					//현재 위치 얻기
+					navigator.geolocation.getCurrentPosition(sucCall);
+					
+					//alert('libList 마지막 도착');
 				}
 			}
         
-        
-        //검색 기능 - Ajax에서 JavaScript로 변경
+//--------------------------------<검색 기능>-------------------------------------------------------        
 		function runSearch(){
 			
 			var bookName = document.getElementById('bookName');
@@ -198,9 +210,10 @@
 			
 			return true;
 		}
+//--------------------------------<검색 기능 끝>-------------------------------------------------------
         </script>
     </head>
-    <body onload="showCurrentLocation();">
+    <body>
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -522,10 +535,10 @@
 									<span class="inc qtybutton">+</span>	
 								</span> -->
                                <span>
-                                    <a class="cart-btn btn-default" href="">
-                                        <i class="flaticon-shop"></i>
-                                        	구매하기
-                                    </a>
+	                                    <a class="cart-btn btn-default" href="">
+	                                        <i class="flaticon-shop"></i>
+	                                        	구매하기
+	                                    </a>
                                </span><p></p>
                                <span>
                                     <a class="cart-btn btn-default" href="">
@@ -540,24 +553,13 @@
           				<form>
 	          				<input type="hidden" id="isbn" name="isbn" value="${data.get(0).getIsbn()}">
 	          				<input type="button" id="libSearch" value="도서 위치 검색">
-          				</form>
+          				</form> 
           				
                  	<!-- 지도, 도서관 목록 들어갈 박스 -->
-                 		<!-- 목록 박스 -->
+                 		<!-- 지도 박스 -->
 	                    <div id="map" style="width:500px; height:400px;"></div>
-					    <fieldset>
-						    <div>
-						    	<input id="address" type="text">
-						    	<input id="button" value="주소" onclick="codeAddress()">
-						    </div>
-					    </fieldset>
-                            <!-- 위시리스트 기능 삭제 -->
-                            <!-- <div class="add-to-wishlist">
-                                <a class="wish-btn" href="cart.html">
-                                    <i class="fa fa-heart-o"></i>
-                                    ADD TO WISHLIST
-                                </a>
-                            </div> -->
+	                    <!-- 목록 박스 -->
+	                    <div id="LibList"></div>
                             <p></p>
                             <div class="single-product-categories">
                                <label>Categories:</label>
