@@ -1,17 +1,5 @@
 package global.sesoc.test.controller;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +20,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import java.util.ArrayList;
+
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -42,9 +32,11 @@ import global.sesoc.test.api.bookInfo;
 import global.sesoc.test.api.bookSearch;
 import global.sesoc.test.api.libSearch;
 import global.sesoc.test.dao.EbookDAO;
+import global.sesoc.test.dao.ReviewDAO;
 import global.sesoc.test.vo.EBookNumVO;
 import global.sesoc.test.vo.LibraryVO;
 import global.sesoc.test.vo.LivInfoVO;
+import global.sesoc.test.vo.Reply_BookVO;
 import global.sesoc.test.vo.SearchListVO;
 import oracle.net.aso.i;
 
@@ -54,6 +46,9 @@ public class SearchController {
 	
 	@Autowired
 	EbookDAO dao;
+	
+	@Autowired
+	ReviewDAO revdao;
 	
 	
 	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
@@ -77,7 +72,13 @@ public class SearchController {
 			}
 		//2)책 제목 검색
 			if(detail.equals("title")){
-				ebook = dao.title(bookName);
+				//제목 사이에 - 가 들어가 있는 이북 DB자료 고려
+					String bookName2 = bookName.replaceAll(" ", "-");
+					//System.out.println("-붙인 검색 값 : " + bookName2);
+					
+				ebook = dao.title(bookName2);
+				//-빼고 출력하기
+					for(EBookNumVO i : ebook){i.setTitle(i.getTitle().replaceAll("-", " "));}
 				model.addAttribute("ebook", ebook);
 			}
 		//3)저자 검색
@@ -90,7 +91,6 @@ public class SearchController {
 				ebook = dao.pub(bookName);
 				model.addAttribute("ebook", ebook);
 			}
-		
 		
 		/*2) API검색*/
 		//웹에서 고객이 검색한 값 확인
@@ -113,6 +113,8 @@ public class SearchController {
 	
 	/* 
 	 * 도서별 정보 페이지
+	 * 1)isbn값 받고 일반도서 정보 출력 - bookInfo
+	 * 2)booknum값 받고 ebook 정보 출력 - ebookInfo
 	 * */
 	@RequestMapping(value = "/bookInfo", method = RequestMethod.GET)
 	public String bookinfo(String isbn, Model model) {
@@ -136,10 +138,27 @@ public class SearchController {
 			
 			//받아온 값 모델에 저장
 				model.addAttribute("data", list);
-			
 		
-				
 		return "bookInfo";
+	}//매핑 끝
+	
+	@RequestMapping(value = "/ebookInfo", method = RequestMethod.GET)
+	public String ebookinfo(String bookNum, Model model) {
+		
+		//web에서 입력된 bookNum값 확인
+			int num = Integer.parseInt(bookNum);
+			logger.info("도서 검색 목록에서 넘겨받은 이북의 bookNum: {}",bookNum);
+		
+		//컨트롤러 - DB 정보교환
+			EBookNumVO ebook = new EBookNumVO();
+			ebook = dao.num(num);
+			
+		//받아온 값 모델에 저장
+			// "-" 지우기
+			ebook.setTitle(ebook.getTitle().replaceAll("-", " "));
+			model.addAttribute("ebook", ebook);
+			
+		return "ebookInfo";
 	}//매핑 끝
 	
 	
@@ -188,4 +207,46 @@ public class SearchController {
 				//
 				return locationList;
 	}//매핑 끝
+	
+	
+	/*
+	 * 서평 가져오기
+	 * 1) 일반 도서 서평 가져오기 - 책 제목과 출판사 이름으로 검색
+	 * 2) eBook 서평 가져오기 - eBook 번호로 검색
+	 * */
+	@ResponseBody
+	@RequestMapping(value = "/bookrev", method = RequestMethod.POST)
+	public ArrayList<Reply_BookVO> bookRevList(String title, String pub){
+		
+		logger.info("일반 도서 서평 - 웹에서 넘어온 값 확인 - 제목:{}, 출판사:{}",title,pub);
+	
+	//서평 객체와 객체배열 선언	
+		Reply_BookVO std = new Reply_BookVO();
+		ArrayList<Reply_BookVO> rev = new ArrayList<Reply_BookVO>();
+	
+	//웹에서 넘어온 값 객체에 담고 db로 전송
+		std.setTitle(title);
+		std.setPublisher(pub);
+		rev = revdao.bookRev(std);
+		
+		return rev;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/ebookrev", method = RequestMethod.POST)
+	public ArrayList<Reply_BookVO> ebookRevList(String title){
+	
+	//스트링->인트 변환 및 확인차 출력	
+		logger.info("eBook 서평 - 웹에서 넘어온 값 확인 - 책 제목:{}, ",title);
+	
+	//서평 객체와 객체배열 선언	
+		Reply_BookVO std = new Reply_BookVO();
+		ArrayList<Reply_BookVO> rev = new ArrayList<Reply_BookVO>();
+	
+	//웹에서 넘어온 값 객체에 담고 db로 전송
+		rev = revdao.ebookRev(title);
+		
+		return rev;
+	}
 }//컨트롤러 끝 

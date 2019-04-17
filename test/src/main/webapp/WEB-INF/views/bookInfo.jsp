@@ -77,7 +77,7 @@
 			map = new daum.maps.Map(container, options);
 			
 			//마커 표시
-			setMarker(lat,lng,"<div style='padding:5px;'>현재 위치</div>");
+			setMarker(lat,lng,"<div style='padding:5px; text-align: center;'>현재 위치</div>");
 		}
 		
 		function setMarker(lat, lng, content){
@@ -142,11 +142,11 @@
 
         <script src="resources/js/jquery-3.3.1.min.js"></script>
         <script>
-        //지도 검색 기능
         $(document).ready(function(){
-        	
+        	//지도 검색  & 도서관 검색
     		$('#libSearch').on('click',runAPI);
-    		
+    		//서평 정보 가져오기
+        	$('#reviewButton').on('click',runRev);
         });
         
         	function runAPI(){
@@ -189,7 +189,7 @@
 					var lib = ' ';
 					var acute = "'";
 					$.each(list, function(key, data){
-						//작업
+						
 						lib += '<input type="button" name="address" value="'+ data.name +'" onclick="codeAddress(' + acute + data.address + acute + ')"><br>';
 						
 					});
@@ -201,7 +201,55 @@
 					//alert('libList 마지막 도착');
 				}
 			}
-        
+//--------------------------------<서평>----------------------------------------------------------        
+		function runRev(){//일반도서 - 출판사와 책제목으로 서평목록 가져옴
+			
+			alert('runRev실행');
+			
+			// hidden의 value값 가져옴
+			var title = document.getElementById('revTitle').value;
+			var pub = document.getElementById('revPub').value;
+			
+			//alert('확인된 책 제목: ' + title + ', 확인된 출판사: ' + pub);
+			
+			revTrans(title,pub);
+		}
+
+		function revTrans(t,p){
+			
+			$.ajax({
+				url:		'bookrev',
+				type:		'POST',
+				data:		{title: t, pub: p},
+				dataType:	'json',
+				success:	revList,
+				error:		function(){alert('서평 검색 실패');}
+			});
+		}
+		
+		function revList(rev){
+			//작업
+			if(rev == "" || list == null){
+				var rev = '<p>등록된 서평이 없습니다.</p>';
+				$('#data').html(rev);
+			}
+			else{
+				//div 태그에 서평 목록 삽입
+				var rev = '<table>';
+				$.each(rev, function(key, data){
+					
+					rev += '<tr>';//첫번재 행 - 리뷰 내용
+					rev += '<td>' + data.content + '</td></tr>';//행끝
+					rev += '<tr>';//두번째 행 - 작성자 닉네임, 작성 날짜, 대상 도서명
+					rev += '<td>' + data.nickname + ' | ' + data.inputdate + ' | ' + data.title + '</td></tr>';//행끝
+					
+				});
+				rev += '</table>';
+				
+				$('#data').html(rev);
+			
+		}
+//--------------------------------<서평 끝>----------------------------------------------------------			
 //--------------------------------<검색 기능>-------------------------------------------------------        
 		function runSearch(){
 			
@@ -306,6 +354,12 @@
                         <!-- 검색  -->
 						<div class="layer-4">
 	                        <form id="search" action="searchList" method="GET" class="title-4" onsubmit="return runSearch()">
+	                            <select id="detail" name="detail">
+	                        		<option value="total">통합 검색</option>
+	                        		<option value="title">제목 검색</option>
+	                        		<option value="author">저자 검색</option>
+	                        		<option value="publisher">출판사 검색</option>
+	                        	</select>
 	                            <input type="text" placeholder="Enter your book title here" id="bookName" name="bookName" style="border: 1px; border-color: #40acd7;">
 	                            <button type="submit" id="searchButton"><i class="fa fa-search"></i></button>
 	                        </form>
@@ -445,25 +499,6 @@
 				</div>
 			</div>
 		</div>		
-		<!-- Mobile Menu End -->   
-        <!-- Breadcrumbs Area Start -->
-        <!-- <div class="breadcrumbs-area">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-					    <div class="breadcrumbs">
-					       <h2>PRODUCT DETAILS</h2> 
-					       <ul class="breadcrumbs-list">
-						        <li>
-						            <a title="Return to Home" href="index.html">Home</a>
-						        </li>
-						        <li>Product Details</li>
-						    </ul>
-					    </div>
-					</div>
-				</div>
-			</div>
-		</div>  -->
 		<!-- Breadcrumbs Area Start --> 
         <!-- Single Product Area Start -->
         <div class="single-product-area section-padding">
@@ -512,6 +547,7 @@
                             </div> -->
                             <!-- 책 제목 -->
                             <h2>${data.get(0).getTitle()}</h2>
+                            <input type="hidden" id="revTitle" value="${data.get(0).getTitle()}"><!-- 서평용 -->
                             <!-- 이북(ebook)이용 가능 여부 -->
                             <div class="availability">
                                 <span>Ebook 서비스 준비 중입니다</span>
@@ -526,14 +562,8 @@
                                                                     출판사	| ${data.get(0).getPublisher()}<br>
                                                                     출간일	| ${data.get(0).getPubdate()}<br>
                                ISBN	| ${data.get(0).getIsbn()}</p>
-                               
+                            <input type="hidden" id="revPub" value="${data.get(0).getPublisher()}"><!-- 서평용 --> 
                             <div class="product-attributes clearfix">
-                            	<!-- 수량 지정 버튼 삭제 -->
-                                <!-- <span class="pull-left" id="quantity-wanted-p">
-									<span class="dec qtybutton">-</span>
-									<input type="text" value="1" class="cart-plus-minus-box">
-									<span class="inc qtybutton">+</span>	
-								</span> -->
                                <span>
 	                                    <a class="cart-btn btn-default" href="">
 	                                        <i class="flaticon-shop"></i>
@@ -561,7 +591,7 @@
 	                    <!-- 목록 박스 -->
 	                    <div id="LibList"></div>
                             <p></p>
-                            <div class="single-product-categories">
+                            <!-- <div class="single-product-categories">
                                <label>Categories:</label>
                                 <span>e-book, biological, business</span>
                             </div>
@@ -572,7 +602,7 @@
                                     <li><a href="#"><i class="flaticon-social-1"></i></a></li>
                                     <li><a href="#"><i class="flaticon-social-2"></i></a></li>
                                 </ul> 
-                            </div>
+                            </div> -->
                             <div id="product-comments-block-extra">
 								<ul class="comments-advices">
 									<li>
@@ -583,24 +613,36 @@
                         </div>
                     </div>
                 </div>
+<!----------------------- 책 소개, 서평, 지도 박스 ----------------------------->
+                
                 <div class="row">
 					<div class="col-md-9">
                         <div class="p-details-tab-content">
                             <div class="p-details-tab">
                                 <ul class="p-details-nav-tab" role="tablist">
                                     <li role="presentation" class="active"><a href="#more-info" aria-controls="more-info" role="tab" data-toggle="tab">책 소개</a></li>
-                                    <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">서평</a></li>
-                                    <li role="presentation"><a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">Tab</a></li>
+                                    <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab" id="reviewButton">서평</a></li>
+                                    <li role="presentation"><a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">위치</a></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
-                            <!-- 책 소개 입력 장소 -->
+               <!----- 소개 ----------------------> 
                             <div class="tab-content review">
                                 <div role="tabpanel" class="tab-pane active" id="more-info">
-                                    <p style="font-size: 15spx;font-weight: bold;">${data.get(0).getDescription()}</p>
+                                    <!-- 책 소개 내용이 있을땐 출력 -->
+                                	<c:if test="${data.get(0).getDescription() != null}">
+                                    	<p style="font-size: 15spx;font-weight: bold;">${data.get(0).getDescription()}</p>
+                                    </c:if>
+                                    <!-- 책 소개 내용이 없으면 없다고 출력 -->
+                                    <c:if test="${data.get(0).getDescription() == null}">
+                                    	<p style="font-size: 15spx;font-weight: bold;">책 소개가 없는 도서입니다</p>	
+                                    </c:if>
                                 </div>
+               <!----- 서평 ---------------------->
                                 <div role="tabpanel" class="tab-pane" id="data">
-                                    <table class="table-data-sheet">
+                                
+                                
+                                   <!--  <table class="table-data-sheet">
                                         <tbody>
                                             <tr class="odd">
                                                 <td>Compositions</td>
@@ -615,7 +657,9 @@
                                                 <td>Short Sleeve</td>
                                             </tr>
                                         </tbody>
-                                   </table>
+                                   </table> -->
+                                   
+                                   
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="reviews">
                                     <div id="product-comments-block-tab">
@@ -625,381 +669,39 @@
                             </div>
                         </div>
 					</div>
-				</div>  
+				</div>
+<!-- -----------------------------책 소개, 서평, 지도 박스 끝 ------------------------------------>                
             </div>
         </div>
-        <!-- Single Product Area End -->
-        <!-- Related Product Area Start -->
-        <!-- <div class="related-product-area">
-            <h2 class="section-title">이런 책은 어떠세요?</h2>
-            <div class="container">
-                <div class="row">
-                    <div class="related-product indicator-style">
-                        <div class="col-md-3">
-                            <div class="single-banner">
-                                <div class="product-wrapper">
-                                    <a href="#" class="single-banner-image-wrapper">
-                                        <img alt="" src="img/featured/1.jpg">
-                                        <div class="price"><span>$</span>160</div>
-                                        <div class="rating-icon">
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </a>
-                                    <div class="product-description">
-                                        <div class="functional-buttons">
-                                            <a href="#" title="Add to Cart">
-                                                <i class="fa fa-shopping-cart"></i>
-                                            </a>
-                                            <a href="#" title="Add to Wishlist">
-                                                <i class="fa fa-heart-o"></i>
-                                            </a>
-                                            <a href="#" title="Quick View">
-                                                <i class="fa fa-compress"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="banner-bottom text-center">
-                                    <a href="#">People of the book</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="single-banner">
-                                <div class="product-wrapper">
-                                    <a href="#" class="single-banner-image-wrapper">
-                                        <img alt="" src="img/featured/2.jpg">
-                                        <div class="price"><span>$</span>160</div>
-                                        <div class="rating-icon">
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </a>
-                                    <div class="product-description">
-                                        <div class="functional-buttons">
-                                            <a href="#" title="Add to Cart">
-                                                <i class="fa fa-shopping-cart"></i>
-                                            </a>
-                                            <a href="#" title="Add to Wishlist">
-                                                <i class="fa fa-heart-o"></i>
-                                            </a>
-                                            <a href="#" title="Quick view" data-toggle="modal" data-target="#productModal">
-                                                <i class="fa fa-compress"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="banner-bottom text-center">
-                                    <a href="#">East of eden</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="single-banner">
-                                <div class="product-wrapper">
-                                    <a href="#" class="single-banner-image-wrapper">
-                                        <img alt="" src="img/featured/3.jpg">
-                                        <div class="price"><span>$</span>160</div>
-                                        <div class="rating-icon">
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </a>
-                                    <div class="product-description">
-                                        <div class="functional-buttons">
-                                            <a href="#" title="Add to Cart">
-                                                <i class="fa fa-shopping-cart"></i>
-                                            </a>
-                                            <a href="#" title="Add to Wishlist">
-                                                <i class="fa fa-heart-o"></i>
-                                            </a>
-                                            <a href="#" title="Quick view" data-toggle="modal" data-target="#productModal">
-                                                <i class="fa fa-compress"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="banner-bottom text-center">
-                                    <a href="#">Lone some dove</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="single-banner">
-                                <div class="product-wrapper">
-                                    <a href="#" class="single-banner-image-wrapper">
-                                        <img alt="" src="img/featured/4.jpg">
-                                        <div class="price"><span>$</span>160</div>
-                                        <div class="rating-icon">
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </a>
-                                    <div class="product-description">
-                                        <div class="functional-buttons">
-                                            <a href="#" title="Add to Cart">
-                                                <i class="fa fa-shopping-cart"></i>
-                                            </a>
-                                            <a href="#" title="Add to Wishlist">
-                                                <i class="fa fa-heart-o"></i>
-                                            </a>
-                                            <a href="#" title="Quick view" data-toggle="modal" data-target="#productModal">
-                                                <i class="fa fa-compress"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="banner-bottom text-center">
-                                    <a href="#">The secret garden</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="single-banner">
-                                <div class="product-wrapper">
-                                    <a href="#" class="single-banner-image-wrapper">
-                                        <img alt="" src="img/featured/5.jpg">
-                                        <div class="price"><span>$</span>160</div>
-                                        <div class="rating-icon">
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </a>
-                                    <div class="product-description">
-                                        <div class="functional-buttons">
-                                            <a href="#" title="Add to Cart">
-                                                <i class="fa fa-shopping-cart"></i>
-                                            </a>
-                                            <a href="#" title="Add to Wishlist">
-                                                <i class="fa fa-heart-o"></i>
-                                            </a>
-                                            <a href="#" title="Quick view" data-toggle="modal" data-target="#productModal">
-                                                <i class="fa fa-compress"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="banner-bottom text-center">
-                                    <a href="#">Twilight</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                               <div class="single-banner">
-                                <div class="product-wrapper">
-                                    <a href="#" class="single-banner-image-wrapper">
-                                        <img alt="" src="img/featured/6.jpg">
-                                        <div class="price"><span>$</span>160</div>
-                                        <div class="rating-icon">
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star icolor"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </a>
-                                    <div class="product-description">
-                                        <div class="functional-buttons">
-                                            <a href="#" title="Add to Cart">
-                                                <i class="fa fa-shopping-cart"></i>
-                                            </a>
-                                            <a href="#" title="Add to Wishlist">
-                                                <i class="fa fa-heart-o"></i>
-                                            </a>
-                                            <a href="#" title="Quick view" data-toggle="modal" data-target="#productModal">
-                                                <i class="fa fa-compress"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="banner-bottom text-center">
-                                    <a href="#">Cold mountain</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        <!-- Related Product Area End -->
-		<!-- Footer Area Start -->
-		<!-- <footer>
-		    <div class="footer-top-area">
-		        <div class="container">
-		            <div class="row">
-		                <div class="col-md-3 col-sm-8">
-		                    <div class="footer-left">
-		                        <a href="index.html">
-		                            <img src="img/logo-2.png" alt="">
-		                        </a>
-		                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
-		                        <ul class="footer-contact">
-		                            <li>
-		                                <i class="flaticon-location"></i>
-		                                450 fifth Avenue, 34th floor. NYC
-		                            </li>
-		                            <li>
-		                                <i class="flaticon-technology"></i>
-		                                (+800) 123 4567 890
-		                            </li>
-		                            <li>
-		                                <i class="flaticon-web"></i>
-		                                info@bookstore.com
-		                            </li>
-		                        </ul>
-		                    </div>
-		                </div>
-		                <div class="col-md-2 col-sm-4">
-		                    <div class="single-footer">
-		                        <h2 class="footer-title">Information</h2>
-		                        <ul class="footer-list">
-		                            <li><a href="about.html">About Us</a></li>
-		                            <li><a href="#">Delivery Information</a></li>
-		                            <li><a href="#">Privacy & Policy</a></li>
-		                            <li><a href="#">Terms & Conditions</a></li>
-		                            <li><a href="#">Manufactures</a></li>
-		                        </ul>
-		                    </div>
-		                </div>
-		                <div class="col-md-2 hidden-sm">
-		                    <div class="single-footer">
-		                        <h2 class="footer-title">My Account</h2>
-		                        <ul class="footer-list">
-		                            <li><a href="my-account.html">My Account</a></li>
-		                            <li><a href="account.html">Login</a></li>
-		                            <li><a href="cart.html">My Cart</a></li>
-		                            <li><a href="wishlist.html">Wishlist</a></li>
-		                            <li><a href="checkout.html">Checkout</a></li>
-		                        </ul>
-		                    </div>
-		                </div>
-		                <div class="col-md-2 hidden-sm">
-		                    <div class="single-footer">
-		                        <h2 class="footer-title">Shop</h2>
-		                        <ul class="footer-list">
-		                            <li><a href="#">Orders & Returns</a></li>
-		                            <li><a href="#">Search Terms</a></li>
-		                            <li><a href="#">Advance Search</a></li>
-		                            <li><a href="#">Affiliates</a></li>
-		                            <li><a href="#">Group Sales</a></li>
-		                        </ul>
-		                    </div>
-		                </div>
-		                <div class="col-md-3 col-sm-8">
-		                    <div class="single-footer footer-newsletter">
-		                        <h2 class="footer-title">Our Newsletter</h2>
-		                        <p>Consectetur adipisicing elit se do eiusm od tempor incididunt ut labore et dolore magnas aliqua.</p>
-		                        <form action="#" method="post">
-		                            <div>
-		                                <input type="text" placeholder="email address">
-		                            </div>
-		                            <button class="btn btn-search btn-small" type="submit">SUBSCRIBE</button>
-		                            <i class="flaticon-networking"></i>
-		                        </form>
-		                        <ul class="social-icon">
-		                            <li>
-		                                <a href="#">
-		                                    <i class="flaticon-social"></i>
-		                                </a>
-		                            </li>
-		                            <li>
-		                                <a href="#">
-		                                    <i class="flaticon-social-1"></i>
-		                                </a>
-		                            </li>
-		                            <li>
-		                                <a href="#">
-		                                    <i class="flaticon-social-2"></i>
-		                                </a>
-		                            </li>
-		                            <li>
-		                                <a href="#">
-		                                    <i class="flaticon-video"></i>
-		                                </a>
-		                            </li>
-		                        </ul>
-		                    </div>
-		                </div>
-		                <div class="col-md-2 col-sm-4 visible-sm">
-		                    <div class="single-footer">
-		                        <h2 class="footer-title">Shop</h2>
-		                        <ul class="footer-list">
-		                            <li><a href="#">Orders & Returns</a></li>
-		                            <li><a href="#">Search Terms</a></li>
-		                            <li><a href="#">Advance Search</a></li>
-		                            <li><a href="#">Affiliates</a></li>
-		                            <li><a href="#">Group Sales</a></li>
-		                        </ul>
-		                    </div>
-		                </div>
-		            </div>
-		        </div>
-		    </div>
-		    <div class="footer-bottom">
-		        <div class="container">
-		            <div class="row">
-		                <div class="col-md-6">
-                            <div class="footer-bottom-left pull-left">
-                                <p>Copyright &copy; 2016 <span><a href="#">DevItems</a></span>. All Right Reserved.</p>
-                            </div>
-		                </div>
-		                <div class="col-md-6">
-		                    <div class="footer-bottom-right pull-right">
-		                        <img src="img/paypal.png" alt="">
-		                    </div>
-		                </div>
-		            </div>
-		        </div>
-		    </div>
-		</footer>
-		Footer Area End
-		all js here
-		jquery latest version
-        <script src="js/vendor/jquery-1.12.0.min.js"></script>
-		bootstrap js
-        <script src="js/bootstrap.min.js"></script>
-		owl.carousel js
-        <script src="js/owl.carousel.min.js"></script>
-		jquery-ui js
-        <script src="js/jquery-ui.min.js"></script>
-		jquery Counterup js
-        <script src="js/jquery.counterup.min.js"></script>
-        <script src="js/waypoints.min.js"></script>	
-		jquery countdown js
-        <script src="js/jquery.countdown.min.js"></script>
-		jquery countdown js
+     	<script src="resources/js/vendor/jquery-1.12.0.min.js"></script>
+		<!-- bootstrap js -->
+        <script src="resources/js/bootstrap.min.js"></script>
+		<!-- owl.carousel js -->
+        <script src="resources/js/owl.carousel.min.js"></script>
+		<!-- jquery-ui js -->
+        <script src="resources/js/jquery-ui.min.js"></script>
+		<!-- jquery Counterup js -->
+        <script src="resources/js/jquery.counterup.min.js"></script>
+        <script src="resources/js/waypoints.min.js"></script>	
+		<!-- jquery countdown js -->
+        <script src="resources/js/jquery.countdown.min.js"></script>
+		<!-- jquery countdown js -->
         <script type="text/javascript" src="venobox/venobox.min.js"></script>
-		jquery Meanmenu js
+		<!-- jquery Meanmenu js -->
         <script src="js/jquery.meanmenu.js"></script>
-		wow js
+		<!-- wow js -->
         <script src="js/wow.min.js"></script>	
 		<script>
 			new WOW().init();
 		</script>
-		scrollUp JS		
+		<!-- scrollUp JS -->		
         <script src="js/jquery.scrollUp.min.js"></script>
-		plugins js
+		<!-- plugins js -->
         <script src="js/plugins.js"></script>
-		Nivo slider js
+		<!-- Nivo slider js -->
 		<script src="lib/js/jquery.nivo.slider.js" type="text/javascript"></script>
 		<script src="lib/home.js" type="text/javascript"></script>
-		main js
-        <script src="js/main.js"></script> -->
+		<!-- main js -->
+        <script src="js/main.js"></script>
     </body>
 </html>

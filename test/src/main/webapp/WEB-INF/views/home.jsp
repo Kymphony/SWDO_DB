@@ -152,7 +152,7 @@
 						<div class="layer-4">
 	                        <form id="search" action="searchList" method="GET" class="title-4" onsubmit="return runSearch()">
 	                        	<select id="detail" name="detail">
-	                        		<option value="total">통합 겁색</option>
+	                        		<option value="total">통합 검색</option>
 	                        		<option value="title">제목 검색</option>
 	                        		<option value="author">저자 검색</option>
 	                        		<option value="publisher">출판사 검색</option>
