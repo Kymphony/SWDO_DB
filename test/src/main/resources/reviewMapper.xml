@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- reply_book -->
+<mapper namespace="global.sesoc.test.dao.ReviewMapper">
+
+<select id="bookRev" parameterType="reply_book" resultType="reply_book">
+	select * from reply_book where title like '%'||#{title}||'%' and publisher like '%'||#{publisher}||'%'
+</select>
+
+<select id="ebookRev" parameterType="String" resultType="reply_book">
+	select * from reply_book where title like '%'||#{title}||'%'
+</select>
+
+</mapper>

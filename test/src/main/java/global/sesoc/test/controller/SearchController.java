@@ -229,6 +229,12 @@ public class SearchController {
 		std.setPublisher(pub);
 		rev = revdao.bookRev(std);
 		
+	//DB에서 넘어온 값 확인
+		//for(Reply_BookVO i : rev){logger.info("넘어온 서평들의 책 제목: {}", i.getContent());}
+			
+	//날짜 정보 간추리기
+		for(Reply_BookVO i : rev){i.setInputdate(i.getInputdate().substring(0, 10));}
+		
 		return rev;
 	}
 	
@@ -246,6 +252,12 @@ public class SearchController {
 	
 	//웹에서 넘어온 값 객체에 담고 db로 전송
 		rev = revdao.ebookRev(title);
+		
+	//DB에서 넘어온 값 확인
+		//for(Reply_BookVO i : rev){logger.info("넘어온 서평들의 책 제목: {}", i.getContent());}
+	
+	//날짜 정보 간추리기
+		for(Reply_BookVO i : rev){i.setInputdate(i.getInputdate().substring(0, 10));}
 		
 		return rev;
 	}

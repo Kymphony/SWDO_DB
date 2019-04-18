@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="global.sesoc.test.dao.EbookMapper">
+<!-- 통합 검색-->
+	<select id="total" parameterType="String" resultType="ebooknum">
+		select 
+			* 
+		from 
+			Ebooknum 
+		where
+			title like '%'||#{string}||'%'
+			or
+			author like '%'||#{string}||'%'
+			or
+			publisher like '%'||#{string}||'%'
+			 
+	</select>
+
+<!-- 제목 검색 -->
+	<select id="title" parameterType="String" resultType="ebooknum">
+		select * from Ebooknum where title like '%'||#{string}||'%'
+	</select>
+	
+<!-- 저자 검색 -->	
+	<select id="author" parameterType="String" resultType="ebooknum">
+		select * from Ebooknum where author like '%'||#{string}||'%'
+	</select>
+	
+<!-- 출판사 검색 -->	
+	<select id="pub" parameterType="String" resultType="ebooknum">
+		select * from Ebooknum where publisher like '%'||#{string}||'%'
+	</select>
+
+<!-- 도서별 정보 가져오기 -->
+	<select id="num" parameterType="int" resultType="ebooknum">
+		select * from Ebooknum where bookNum = #{num}
+	</select>
+
+</mapper>

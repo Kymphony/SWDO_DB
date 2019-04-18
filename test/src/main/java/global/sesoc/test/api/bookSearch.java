@@ -109,9 +109,9 @@ public class bookSearch {
 		            	a.setTitle(a.getTitle().replaceAll("<b>Naver</b>", ""));
 		            	
 		            	//책 설명 길이 조절하기
-		            	if(a.getDescription().length()>=50){
+		            	/*if(a.getDescription().length()>=50){
 		            		a.setDescription(a.getDescription().substring(0, 50)+"...");
-		            	}
+		            	}*/
 		            	
 		            	//list 저장값 확인
 		            	//System.out.println(a);
