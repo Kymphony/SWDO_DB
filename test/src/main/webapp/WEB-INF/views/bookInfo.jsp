@@ -42,17 +42,52 @@
         <link rel="stylesheet" href="resources/css/responsive.css">
 		<!-- modernizr css -->
         <script src="resources/js/vendor/modernizr-2.8.3.min.js"></script>
-		
 <!----------------------------------- 카카오 맵 API ------------------------------------------------->
 		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=75f1d4e9550bf5ba1993aec460a39511&libraries=services,clusterer,drawing"></script>
-		<script>
+		<script src="resources/js/jquery-3.3.1.min.js"></script>
+        <script>
+        $(document).ready(function(){
+        	//지도 검색  & 도서관 검색
+    		$('#libloc').on('click',runAPI);
+    		$('#offline').on('click',runAPI);
+    		
+    		//도서관 목록 지우기
+    		$('#reviewButton').on('click',delList1);
+    		$('#descButton').on('click',delList2);
+    		
+        	//서평 정보 가져오기
+        	$('#reviewButton').on('click',runRev);
+        });
+
+		
+		
 		var map;
+		var allvar; // list 담을 전역변수
 		/* window.onload = function(){
 			//페이지 로드시 나의 현재 위치의 위도와 경도 얻기
 			//현재 위치정보 딱 한번 앋기
 			navigator.geolocation.getCurrentPosition(sucCall);
 		}; */
+		
 		//위치 정보 얻기 성공시 자동으로 호출되는 콜배함수. 인자는 Position 객체
+		
+		function runAPI(){
+        		
+			//alert('runAPI 구동');
+			
+			navigator.geolocation.getCurrentPosition(sucCall);
+			
+        		/* var temp = document.getElementById("isbn");
+        		var isbn = temp.value;
+        		
+        		if(isbn == null || isbn == ''){alert('검색 할 수 없는 도서입니다.');return;}
+        		
+        		//alert('run API - isbn값 확인:' + isbn);
+        		
+        		runTrans(isbn); */
+        	}
+		
+		
 		var sucCall = function(position){
 			//위도
 			var lat = position.coords.latitude;
@@ -76,8 +111,71 @@
 			//지도 생성 및 객체 리턴
 			map = new daum.maps.Map(container, options);
 			
+			
+			//지도에 컨트롤 올리기
+			
+				// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+					var mapTypeControl = new daum.maps.MapTypeControl();
+				
+				// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+				// daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+					map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+				
+				// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+				var zoomControl = new daum.maps.ZoomControl();
+					map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT)
+			
+			
 			//마커 표시
 			setMarker(lat,lng,"<div style='padding:5px; text-align: center;'>현재 위치</div>");
+					
+			var temp = document.getElementById("isbn");
+	        var isbn = temp.value;
+	        		
+	        if(isbn == null || isbn == ''){alert('검색 할 수 없는 도서입니다.');return;}
+	        		
+	        //alert('displayMap 하단 - isbn값 확인:' + isbn);
+	        		
+	        runTrans(isbn); // 도서관 목록 값 가져오고 도서관 목록 출력 후 전역변수 allvar에 list 저장
+	        
+	        /* (작업)도서관들의 주소 목록 allvar(전역 변수)와 현재 위치 lat lng 가지고 있음
+	        
+	        	1. 도서관들의 주소를 위도경도 값으로 바꿔야 함
+	        	   1) 도서관들의 주소를 반복문으로 모두 위도경도로 바꿈
+	        	   2) 바꾼 위도 경도 값을 배열에 넣는다
+	        	   3) 두 지점의 거리를 구하는 메서드를 호출하며 값을 전달한다
+	        
+	        	2. 두 지점의 거리를 구함
+	        */
+	        //1)도서관들의 주소를 반복문으로 모두 위도경도로 바꿈
+	       var address = [];
+	        
+	       for(var i = 0 ; i < allvar.length ; i++){
+				
+				address.push(allvar.get(i).getAddress());
+			
+	       };
+	        
+	      
+	        alert('담긴 주소 객체 값:' + address[0]);
+	        
+	        
+	        
+	        
+	      //주소-좌표 변환 객체 생성
+			var geocoder = new daum.maps.services.Geocoder();
+			
+			
+			//주소로 좌표를 검색합니다
+			geocoder.addressSearch(address,function(result, status){
+				
+				
+				//정상적으로 검색이 완료됐으면
+				if(status === daum.maps.services.Status.OK){
+					var lat = result[0].y;
+					var lng = result[0].x;
+				}
+			});
 		}
 		
 		function setMarker(lat, lng, content){
@@ -133,39 +231,22 @@
 					setMarker(lat,lng,"<div style='padding:5px;'>" + address +"</div>");
 					
 					//지도의 중심을 결과값으로 받은 위치로 이동
-					map.setCenter(new daum.maps.LatLng(lat, lng));
+					//map.setCenter(new daum.maps.LatLng(lat, lng));
+					
+					//부드럽게 이동(추가 기능)
+					var moveLatLng = new daum.maps.LatLng(lat, lng);   
+					map.panTo(moveLatLng);
 				}
 			});
 		}
+		
 		</script>
 <!-------------------------------- 카카오 맵 API 부분 끝 ---------------------------------------------->
-
-        <script src="resources/js/jquery-3.3.1.min.js"></script>
-        <script>
-        $(document).ready(function(){
-        	//지도 검색  & 도서관 검색
-    		$('#libloc').on('click',runAPI);
-    		$('#offline').on('click',runAPI);
-    		
-    		//도서관 목록 지우기
-    		$('#reviewButton').on('click',delList1);
-    		$('#descButton').on('click',delList2);
-    		
-        	//서평 정보 가져오기
-        	$('#reviewButton').on('click',runRev);
-        });
+		<script>
         
-        	function runAPI(){
-        		
-        		var temp = document.getElementById("isbn");
-        		var isbn = temp.value;
-        		
-        		if(isbn == null || isbn == ''){alert('검색 할 수 없는 도서입니다.');return;}
-        		
-        		//alert('run API - isbn값 확인:' + isbn);
-        		
-        		runTrans(isbn);
-        	}
+//--------'오프라인 대여 위치 찾기', '위치' 버튼 클릭시 지도, 도서관 목록 출력 기능----------------------------------
+
+        	
         
 		//isbn값 받고 컨트롤러에 전송
 	        function runTrans(isbn){
@@ -180,10 +261,10 @@
 					success:	libList,
 					error:		function(){alert('전송 실패');}
 				});				
-	        }
-		
+			}	        
 		
 			function libList(list){
+				
 				
 				//alert('libList(list) 실행');
 				
@@ -197,16 +278,43 @@
 					$.each(list, function(key, data){
 						
 						lib += '<input type="button" name="address" value="'+ data.name +'" onclick="codeAddress(' + acute + data.address + acute + ')"><br><br>';
-						
 					});
 					$('#LibList').html(lib);
 					
-					//현재 위치 얻기
-					navigator.geolocation.getCurrentPosition(sucCall);
-					
-					//alert('libList 마지막 도착');
-				}
-			}
+					allvar = list;
+				//현재 위치 얻기 -> 맵 생성, getData 메서드 실행
+				/* navigator.geolocation.getCurrentPosition(sucCall); */
+				
+				}//else 끝
+			}//libList 끝
+			
+//--------'오프라인 대여 위치 찾기', '위치' 버튼 클릭시 지도, 도서관 목록 출력 기능 끝----------------------------------
+
+
+	      //거리 계산, 작업
+			/*
+				var mlon=$('#mlon').val();
+				var mlat=$('#mlat').val();
+				var vlon=$('#vlon'+no).val();
+				var vlat=$('#vlat'+no).val();
+				
+				var polyline=new daum.maps.Polyline({
+					//map:map,
+					path : [
+					new daum.maps.LatLng(mlon,mlat),
+					new daum.maps.LatLng(vlon,vlat)
+					],
+				 strokeWeight: 2,
+				 strokeColor: '#FF00FF',
+				 strokeOpacity: 0.8,
+				 strokeStyle: 'dashed'
+				});
+				
+				//return getTimeHTML(polyline.getLength());//미터단위로 길이 반환;
+				console.log("길이"+polyline.getLength());
+				return polyline.getLength();
+			*/	
+
 //--------------------------------<서평>----------------------------------------------------------        
 		 function runRev(){//일반도서 - 출판사와 책제목으로 서평목록 가져옴
 			
@@ -256,8 +364,9 @@
 				
 			}
 		}
-//--------------------------------<서평 끝>----------------------------------------------------------			
-//--------------------------------<검색 기능>-------------------------------------------------------        
+//--------------------------------<서평 끝>----------------------------------------------------------
+
+//--------------------------------<검색 기능>---------------------------------------------------------        
 		function runSearch(){
 			
 			var bookName = document.getElementById('bookName');
@@ -266,17 +375,20 @@
 			return true;
 		}
 //--------------------------------<검색 기능 끝>-------------------------------------------------------
-	//서평 눌럿을때 도서관 목록 삭제
+
+//--------------------------서평 눌럿을때 도서관 목록 삭제---------------------------------------------------
 	function delList1(){
-	var print = ' ';
-	$('#LibList').html(print); 
+		var print = ' ';
+		$('#LibList').html(print); 
 	}
 	//책 소개 눌렀을때 도서관 목록 삭제 
 	function delList2(){
-	var print = ' ';
-	$('#LibList').html(print); 	
+		var print = ' ';
+		$('#LibList').html(print); 	
 	}
-	
+//--------------------------서평 눌럿을때 도서관 목록 삭제 끝--------------------------------------------------
+    </script>		
+
     </script>
     </head>
     <body>
@@ -330,7 +442,7 @@
                                         <div class="cart-product">
                                             <div class="cart-product-image">
                                                 <a href="bookInfo.jsp">
-                                                    <img src="img/shop/1.jpg" alt="">
+                                                    
                                                 </a>
                                             </div>
                                             <div class="cart-product-info">
@@ -582,7 +694,7 @@
                                ISBN	| ${data.get(0).getIsbn()}</p>
                             <input type="hidden" id="revPub" value="${data.get(0).getPublisher()}"><!-- 서평용 --> 
                             <div class="product-attributes clearfix">
-                               <span><!-- 작업 -->
+                               <span>
                                			<input type="hidden" id="isbn" name="isbn" value="${data.get(0).getIsbn()}">
 	                                    <a class="cart-btn btn-default" href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab" id="offline">
 	                                        <i class="flaticon-shop"></i>
@@ -641,7 +753,7 @@
                                     <li role="presentation" class="active"><a href="#more-info" aria-controls="more-info" role="tab" data-toggle="tab" id="descButton">책 소개</a></li>
                                     <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab" id="reviewButton">서평</a></li>
                                     <li role="presentation"><a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab" id="libloc">위치</a></li>
-                                </ul><!-- 작업 -->
+                                </ul>
                             </div>
                             <div class="clearfix"></div>
                <!----- 소개 ----------------------> 
